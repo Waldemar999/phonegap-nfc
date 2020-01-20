@@ -20,7 +20,7 @@
     NSLog(@"(c)2017 Don Coleman");
 
     [super pluginInitialize];
-    
+
     // TODO fail quickly if not supported
     if (![NFCNDEFReaderSession readingAvailable]) {
         NSLog(@"NFC Support is NOT available");
@@ -82,9 +82,9 @@
 - (void) tagReaderSession:(NFCTagReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCTag>> *)tags {
     NSLog(@"NFCTagReaderSession tagReaderSession");
     for (__kindof id<NFCTag> tag in tags) {
-        
+
         NSArray *identifier = getTagIdFromNFCTag(tag);
-        
+
         [session connectToTag:(id<NFCTag>)tag completionHandler:^(NSError * _Nullable error) {
             NSLog(@"NFCTagReaderSession connectToTagError %@ %@", error.localizedDescription, error.localizedFailureReason);
             [self readNdefMessageFromTag:session didDetectTag:tag withTagId:identifier];
@@ -103,7 +103,7 @@
 
 - (void) readerSession:(NFCReaderSession *)session didDetectNDEFs:(NSArray<NFCNDEFMessage *> *)messages  API_AVAILABLE(ios(11.0)){
     NSLog(@"NFCNDEFReaderSession didDetectNDEFs");
-    
+
     for (NFCNDEFMessage *message in messages) {
         [self fireNdefEvent: message withTagId:nil];
     }
@@ -161,13 +161,13 @@
 }
 
 -(NSString *) ndefMessagetoJSONString:(NFCNDEFMessage *) ndefMessage withTagId:(NSArray *)tagId  {
-    
+
     NSMutableArray *array = [NSMutableArray new];
     for (NFCNDEFPayload *record in ndefMessage.records){
         NSDictionary* recordDictionary = [self ndefRecordToNSDictionary:record];
         [array addObject:recordDictionary];
     }
-    
+
     // The JavaScript tag object expects a key with ndefMessage
     NSMutableDictionary *wrapper = [NSMutableDictionary new];
     [wrapper setObject:array forKey:@"ndefMessage"];
@@ -218,12 +218,12 @@ NSArray *getTagIdFromNFCTag(__kindof id<NFCTag> tag) {
             identifier = nil;
             break;
     }
-    
-    NSPredicate *notZero = [NSPredicate predicateWithBlock:
-    ^BOOL(id evalObject,NSDictionary * options) {
-        return [evalObject boolValue];
-    }];
-    identifier = [identifier filteredArrayUsingPredicate:notZero];
+
+//     NSPredicate *notZero = [NSPredicate predicateWithBlock:
+//     ^BOOL(id evalObject,NSDictionary * options) {
+//         return [evalObject boolValue];
+//     }];
+//     identifier = [identifier filteredArrayUsingPredicate:notZero];
     return identifier;
 }
 
